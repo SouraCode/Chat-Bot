@@ -1,0 +1,63 @@
+{
+  "projectName": "chatgpt",
+  "techStack": {
+    "backend": {
+      "language": "Node.js",
+      "framework": "Express",
+      "database": "MongoDB via Mongoose",
+      "auth": "None",
+      "aiProvider": "Google Gemini via @google/generative-ai"
+    },
+    "frontend": {
+      "type": "Static HTML/CSS/JS",
+      "servedFrom": "Express static middleware at / (public/index.html)"
+    }
+  },
+  "env": [
+    "MONGODB_URI",
+    "GEMINI_API_KEY",
+    "PORT (default 3000)"
+  ],
+  "entryPoints": {
+    "server": "server.js",
+    "frontend": "public/index.html"
+  },
+  "httpEndpoints": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "desc": "Health check"
+    },
+    {
+      "method": "POST",
+      "path": "/api/chat",
+      "body": { "sessionId": "string", "message": "string" },
+      "desc": "Sends a user message, persists to MongoDB, calls Gemini, stores and returns assistant reply"
+    }
+  ],
+  "dataModels": [
+    {
+      "name": "Message",
+      "file": "src/models/Message.js",
+      "schema": {
+        "sessionId": "String (required, indexed)",
+        "role": "Enum: user | assistant | system",
+        "content": "String (required)",
+        "timestamps": true
+      }
+    }
+  ],
+  "notableFiles": [
+    "server.js",
+    "src/routes/chat.js",
+    "src/models/Message.js",
+    "public/index.html",
+    "package.json"
+  ],
+  "assumptions": [
+    "MongoDB and GEMINI_API_KEY must be set for end-to-end tests",
+    "No authentication; sessions are client-generated UUIDs stored in localStorage"
+  ]
+}
+
+
