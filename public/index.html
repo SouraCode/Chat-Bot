@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<title>My ChatGPT</title>
+	<title>Chatbot</title>
 	<style>
 		body {
 			font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -12,7 +12,7 @@
 			color: #e2e8f0;
 		}
 		.container {
-			max-width: 1200px;
+			max-width: 1400px;
 			margin: 32px auto;
 			padding: 24px;
 			display: flex;
@@ -62,9 +62,15 @@
 		}
 		.inputrow {
 			display: grid;
-			grid-template-columns: 1fr auto;
+			grid-template-columns: auto 1fr auto;
 			gap: 8px;
 			margin-top: 16px;
+		}
+		.textarea-input {
+			min-height: 44px;
+			max-height: 200px;
+			resize: none;
+			line-height: 1.4;
 		}
 		input, button {
 			font-size: 17px;
@@ -144,13 +150,17 @@
 		<main style="flex: 1;">
 			<div id="chatSection" style="display:none;">
 				<div class="header">
-					<h2>My ChatGPT</h2>
+					<h2>Chatbot</h2>
 					<button id="newSession">New Session</button>
 				</div>
 				<div class="card chat">
 					<div id="messages" class="messages"></div>
 					<div class="inputrow">
-						<input id="prompt" placeholder="Type your message..." />
+						<label for="fileInput" title="Attach file" style="display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #334155;border-radius:10px;background:#0b1220;color:#e2e8f0;cursor:pointer;">
+							<input id="fileInput" type="file" style="display:none;" />
+							<span>📎</span>
+						</label>
+						<textarea id="prompt" class="textarea-input" placeholder="Type your message..."></textarea>
 						<button id="send">Send</button>
 					</div>
 				</div>
@@ -169,6 +179,7 @@
 	<script>
 		const messagesEl = document.getElementById('messages');
 		const inputEl = document.getElementById('prompt');
+		const fileInput = document.getElementById('fileInput');
 		const sendBtn = document.getElementById('send');
 		const newSessionBtn = document.getElementById('newSession');
 		const signupBtn = document.getElementById('signupBtn');
@@ -468,6 +479,15 @@
 			messagesEl.innerHTML = '';
 		};
 
+		// Auto-resize textarea up to max height
+		function autosize() {
+			inputEl.style.height = 'auto';
+			const next = Math.min(200, inputEl.scrollHeight);
+			inputEl.style.height = next + 'px';
+		}
+		inputEl.addEventListener('input', autosize);
+		setTimeout(autosize, 0);
+
 		inputEl.addEventListener('keydown', (e) => {
 			if (e.key === 'Enter' && !e.shiftKey) {
 				e.preventDefault();
@@ -475,6 +495,19 @@
 			}
 		});
 		sendBtn.addEventListener('click', sendMessage);
+
+		// File upload: add a note to the message about the file name
+		if (fileInput) {
+			fileInput.addEventListener('change', () => {
+				const f = fileInput.files && fileInput.files[0];
+				if (f) {
+					const note = `\n[Attached file: ${f.name} (${Math.round(f.size/1024)} KB)]`;
+					inputEl.value = (inputEl.value || '') + note;
+					autosize();
+					inputEl.focus();
+				}
+			});
+		}
 		newSessionBtn.addEventListener('click', newSession);
 
 		verifyTokenOnLoad();
