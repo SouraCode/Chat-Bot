@@ -5,34 +5,131 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>My ChatGPT</title>
 	<style>
-		body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
-		.container { max-width: 860px; margin: 0 auto; padding: 24px; }
-		.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-		.card { background: #111827; border: 1px solid #1f2937; border-radius: 10px; padding: 16px; }
-		.messages { height: 60vh; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 12px; }
-		.msg { padding: 10px 12px; border-radius: 10px; max-width: 80%; white-space: pre-wrap; }
-		.user { background: #1f2937; align-self: flex-end; }
-		.assistant { background: #0b3b2e; border: 1px solid #134e4a; align-self: flex-start; }
-		.inputrow { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
-		input, button { font-size: 16px; }
-		input { padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0b1220; color: #e2e8f0; }
-		button { padding: 12px 16px; border-radius: 8px; border: 1px solid #334155; background: #1f2937; color: #e2e8f0; cursor: pointer; }
-		button:disabled { opacity: .6; cursor: not-allowed; }
+		body {
+			font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+			margin: 0;
+			background: linear-gradient(120deg, #0f172a 60%, #1e293b 100%);
+			color: #e2e8f0;
+		}
+		.container {
+			max-width: 1200px;
+			margin: 32px auto;
+			padding: 24px;
+			display: flex;
+			gap: 32px;
+		}
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 16px;
+		}
+		.card {
+			background: #111827;
+			border: 1px solid #334155;
+			border-radius: 16px;
+			box-shadow: 0 4px 24px #0002;
+			padding: 24px;
+		}
+		.messages {
+			height: 60vh;
+			overflow-y: auto;
+			padding: 8px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+		}
+		.msg {
+			padding: 12px 16px;
+			border-radius: 12px;
+			max-width: 80%;
+			white-space: pre-wrap;
+			font-size: 17px;
+		}
+		.user {
+			background: linear-gradient(90deg, #1f2937 80%, #334155 100%);
+			align-self: flex-end;
+		}
+		.assistant {
+			background: linear-gradient(90deg, #0b3b2e 80%, #134e4a 100%);
+			border: 1px solid #134e4a;
+			align-self: flex-start;
+		}
+		aside {
+			box-shadow: 0 2px 16px #0002;
+		}
+		.inputrow {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			gap: 8px;
+			margin-top: 16px;
+		}
+		input, button {
+			font-size: 17px;
+		}
+		input {
+			padding: 14px;
+			border-radius: 10px;
+			border: 1px solid #334155;
+			background: #0b1220;
+			color: #e2e8f0;
+		}
+		button {
+			padding: 14px 18px;
+			border-radius: 10px;
+			border: 1px solid #334155;
+			background: linear-gradient(90deg, #334155 80%, #1e293b 100%);
+			color: #e2e8f0;
+			cursor: pointer;
+			font-weight: 500;
+			transition: background 0.2s;
+		}
+		button:hover:not(:disabled) {
+			background: linear-gradient(90deg, #475569 80%, #334155 100%);
+		}
+		button:disabled {
+			opacity: .6;
+			cursor: not-allowed;
+		}
 	</style>
 </head>
 <body>
-	<div class="container">
-		<div class="header">
-			<h2>My ChatGPT</h2>
-			<button id="newSession">New Session</button>
-		</div>
-		<div class="card">
-			<div id="messages" class="messages"></div>
-			<div class="inputrow">
-				<input id="prompt" placeholder="Type your message..." />
-				<button id="send">Send</button>
+	<div class="container" style="display: flex; gap: 32px;">
+		<aside id="sidebar" style="width: 240px; background: #1e293b; border-radius: 12px; padding: 20px 16px; display: flex; flex-direction: column; gap: 24px;">
+			<div style="text-align: center;">
+				<h2 style="margin-bottom: 8px;">ChatGPT</h2>
+				<button id="signupBtn" style="width: 100%; margin-bottom: 8px;">Sign Up</button>
+				<button id="signinBtn" style="width: 100%;">Sign In</button>
+				<button id="signoutBtn" style="width: 100%; display:none; margin-top:8px;">Sign Out</button>
 			</div>
-		</div>
+			<div>
+				<h4 style="margin-bottom: 8px;">Recent Chats</h4>
+				<ul id="recentChats" style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;"></ul>
+			</div>
+		</aside>
+		<main style="flex: 1;">
+			<div id="chatSection" style="display:none;">
+				<div class="header">
+					<h2>My ChatGPT</h2>
+					<button id="newSession">New Session</button>
+				</div>
+				<div class="card">
+					<div id="messages" class="messages"></div>
+					<div class="inputrow">
+						<input id="prompt" placeholder="Type your message..." />
+						<button id="send">Send</button>
+					</div>
+				</div>
+			</div>
+			<div id="authNotice" style="text-align:center; margin-top:80px; color:#94a3b8;">
+				<h2 style="margin-bottom:16px; color:#e2e8f0;">Welcome</h2>
+				<p style="margin-bottom:20px; font-size:18px;">Sign in to start chatting</p>
+				<div>
+					<button id="centerSignupBtn" style="padding:12px 18px; margin-right:10px; border-radius:10px; border:1px solid #334155; background:#334155; color:#e2e8f0; font-size:16px;">Sign Up</button>
+					<button id="centerSigninBtn" style="padding:12px 18px; border-radius:10px; border:1px solid #334155; background:#1e293b; color:#e2e8f0; font-size:16px;">Sign In</button>
+				</div>
+			</div>
+		</main>
 	</div>
 
 	<script>
@@ -40,6 +137,11 @@
 		const inputEl = document.getElementById('prompt');
 		const sendBtn = document.getElementById('send');
 		const newSessionBtn = document.getElementById('newSession');
+		const signupBtn = document.getElementById('signupBtn');
+		const signinBtn = document.getElementById('signinBtn');
+		const centerSignupBtn = document.getElementById('centerSignupBtn');
+		const centerSigninBtn = document.getElementById('centerSigninBtn');
+		const signoutBtn = document.getElementById('signoutBtn');
 
 		function getSessionId() {
 			let id = localStorage.getItem('sessionId');
@@ -63,7 +165,111 @@
 			messagesEl.scrollTop = messagesEl.scrollHeight;
 		}
 
+		async function loadChatHistory(sessionId) {
+			try {
+				const res = await fetch(`/api/history/${sessionId}`, {
+					headers: {
+						'Authorization': 'Bearer ' + localStorage.getItem('token')
+					}
+				});
+				const data = await res.json();
+				if (res.ok && Array.isArray(data.messages)) {
+					messagesEl.innerHTML = '';
+					data.messages.forEach(msg => {
+						addMessage(msg.role, msg.content);
+					});
+				}
+			} catch (err) {
+				console.error('Error loading chat history:', err);
+				messagesEl.innerHTML = '';
+			}
+		}
+
+		function isAuthenticated() {
+			return !!localStorage.getItem('token');
+		}
+
+		const recentChatsEl = document.getElementById('recentChats');
+
+		async function fetchRecentChats() {
+			recentChatsEl.innerHTML = '';
+			if (!isAuthenticated()) return;
+			try {
+				const res = await fetch('/api/recent', {
+					headers: {
+						'Authorization': 'Bearer ' + localStorage.getItem('token')
+					}
+				});
+				const data = await res.json();
+				if (res.ok && Array.isArray(data.sessions)) {
+					data.sessions.forEach((sessionId, index) => {
+						const li = document.createElement('li');
+						// Show more meaningful names
+						const chatNumber = data.sessions.length - index;
+						li.textContent = `Chat ${chatNumber}`;
+						li.title = `Session: ${sessionId}`; // Full ID on hover
+						li.style.cursor = 'pointer';
+						li.style.background = '#111827';
+						li.style.padding = '8px 10px';
+						li.style.borderRadius = '8px';
+						li.style.fontSize = '14px';
+						li.style.marginBottom = '4px';
+						li.style.transition = 'background 0.2s';
+						li.onmouseover = () => li.style.background = '#1f2937';
+						li.onmouseout = () => li.style.background = '#111827';
+						li.onclick = () => {
+							localStorage.setItem('sessionId', sessionId);
+							loadChatHistory(sessionId);
+						};
+						recentChatsEl.appendChild(li);
+					});
+				}
+			} catch (err) {
+				// ignore errors for now
+			}
+		}
+
+		function updateAuthUI() {
+			const chatSection = document.getElementById('chatSection');
+			const authNotice = document.getElementById('authNotice');
+			const sidebar = document.getElementById('sidebar');
+			const container = document.querySelector('.container');
+			if (isAuthenticated()) {
+				signupBtn.style.display = 'none';
+				signinBtn.style.display = 'none';
+				signoutBtn.style.display = '';
+				chatSection.style.display = '';
+				authNotice.style.display = 'none';
+				if (sidebar) sidebar.style.display = '';
+				if (container) {
+					container.style.alignItems = '';
+					container.style.justifyContent = '';
+				}
+				sendBtn.disabled = false;
+				inputEl.disabled = false;
+				fetchRecentChats();
+			} else {
+				signupBtn.style.display = '';
+				signinBtn.style.display = '';
+				signoutBtn.style.display = 'none';
+				chatSection.style.display = 'none';
+				authNotice.style.display = '';
+				if (sidebar) sidebar.style.display = 'none';
+				if (container) {
+					container.style.alignItems = 'center';
+					container.style.justifyContent = 'center';
+				}
+				sendBtn.disabled = true;
+				inputEl.disabled = true;
+				recentChatsEl.innerHTML = '';
+			}
+		}
+
 		async function sendMessage() {
+			if (!isAuthenticated()) {
+				addMessage('assistant', 'Please sign in to use the chat.');
+				return;
+			}
 			const text = inputEl.value.trim();
 			if (!text) return;
 			sendBtn.disabled = true;
@@ -72,7 +278,10 @@
 			try {
 				const res = await fetch('/api/chat', {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': 'Bearer ' + localStorage.getItem('token')
+					},
 					body: JSON.stringify({ sessionId: getSessionId(), message: text })
 				});
 				const data = await res.json();
@@ -89,6 +298,127 @@
 			}
 		}
 
+		function showAuthForm(type) {
+			const form = document.createElement('form');
+			form.style.background = '#111827';
+			form.style.padding = '24px';
+			form.style.borderRadius = '12px';
+			form.style.position = 'fixed';
+			form.style.top = '50%';
+			form.style.left = '50%';
+			form.style.transform = 'translate(-50%, -50%)';
+			form.style.zIndex = '1000';
+			form.style.width = '100%';
+			form.style.maxWidth = '420px';
+			form.innerHTML = `<h3 style="margin-bottom:16px;">${type === 'signup' ? 'Create your account' : 'Welcome back'}</h3>
+				<div id="authError" style="display:none;margin-bottom:12px;padding:10px;border-radius:8px;background:#7f1d1d;color:#fecaca;"></div>
+				${type === 'signup' ? '<input id="authName" placeholder="Full name" autocomplete="name" style="width:100%;margin-bottom:12px;padding:10px;border-radius:8px;border:1px solid #334155;" />' : ''}
+				<input id="authEmail" type="email" placeholder="Email" autocomplete="email" style="width:100%;margin-bottom:12px;padding:10px;border-radius:8px;border:1px solid #334155;" />
+				<div style="position:relative;margin-bottom:12px;">
+					<input id="authPassword" type="password" placeholder="Password${type === 'signup' ? ' (min 6 chars)' : ''}" autocomplete="${type === 'signup' ? 'new-password' : 'current-password'}" style="width:100%;padding:10px 40px 10px 10px;border-radius:8px;border:1px solid #334155;" />
+					<button type="button" id="togglePwd" style="position:absolute;right:8px;top:6px;padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;">Show</button>
+				</div>
+				${type === 'signup' ? '<input id="authConfirm" type="password" placeholder="Confirm password" autocomplete="new-password" style="width:100%;margin-bottom:12px;padding:10px;border-radius:8px;border:1px solid #334155;" />' : ''}
+				<button style="width:100%;padding:12px;border-radius:8px;background:#334155;color:#e2e8f0;">${type === 'signup' ? 'Sign Up' : 'Sign In'}</button>
+				<button type="button" id="closeAuth" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;background:#1e293b;color:#e2e8f0;">Cancel</button>`;
+			document.body.appendChild(form);
+
+			const errorBox = form.querySelector('#authError');
+			const pwdInput = form.querySelector('#authPassword');
+			const togglePwd = form.querySelector('#togglePwd');
+			if (togglePwd) {
+				togglePwd.onclick = () => {
+					const isPw = pwdInput.type === 'password';
+					pwdInput.type = isPw ? 'text' : 'password';
+					togglePwd.textContent = isPw ? 'Hide' : 'Show';
+				};
+			}
+			form.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				const email = form.querySelector('#authEmail').value.trim();
+				const password = form.querySelector('#authPassword').value.trim();
+				const name = type === 'signup' ? form.querySelector('#authName').value.trim() : '';
+				const confirm = type === 'signup' ? (form.querySelector('#authConfirm').value.trim()) : '';
+				errorBox.style.display = 'none';
+				errorBox.textContent = '';
+
+				// Basic validation
+				const emailOk = /.+@.+\..+/.test(email);
+				if (!emailOk) {
+					errorBox.textContent = 'Enter a valid email address.';
+					errorBox.style.display = '';
+					return;
+				}
+				if (type === 'signup') {
+					if (!name || password.length < 6) {
+						errorBox.textContent = 'Name is required and password must be at least 6 characters.';
+						errorBox.style.display = '';
+						return;
+					}
+					if (password !== confirm) {
+						errorBox.textContent = 'Passwords do not match.';
+						errorBox.style.display = '';
+						return;
+					}
+				} else if (!password) {
+					errorBox.textContent = 'Password is required.';
+					errorBox.style.display = '';
+					return;
+				}
+
+				try {
+					const body = type === 'signup' ? { name, email, password } : { email, password };
+					const res = await fetch(`/api/auth/${type}`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(body)
+					});
+					const data = await res.json();
+					if (res.ok) {
+						localStorage.setItem('token', data.token);
+						localStorage.setItem('userName', data.user.name);
+						updateAuthUI();
+						form.remove();
+						messagesEl.innerHTML = '';
+					} else {
+						errorBox.textContent = data.error || 'Authentication error';
+						errorBox.style.display = '';
+					}
+				} catch (err) {
+					errorBox.textContent = 'Network error. Please try again.';
+					errorBox.style.display = '';
+				}
+			});
+			form.querySelector('#closeAuth').onclick = () => form.remove();
+		}
+
+		// Verify token on load and set UI state
+		async function verifyTokenOnLoad() {
+			const token = localStorage.getItem('token');
+			if (!token) { updateAuthUI(); return; }
+			try {
+				const res = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } });
+				if (res.ok) {
+					const data = await res.json();
+					if (data && data.user) {
+						localStorage.setItem('userName', data.user.name || 'User');
+					}
+				}
+			} catch (_) {}
+			updateAuthUI();
+		}
+
+		signupBtn.onclick = () => showAuthForm('signup');
+		signinBtn.onclick = () => showAuthForm('signin');
+		if (centerSignupBtn) centerSignupBtn.onclick = () => showAuthForm('signup');
+		if (centerSigninBtn) centerSigninBtn.onclick = () => showAuthForm('signin');
+		signoutBtn.onclick = () => {
+			localStorage.removeItem('token');
+			localStorage.removeItem('userName');
+			updateAuthUI();
+			messagesEl.innerHTML = '';
+		};
+
 		inputEl.addEventListener('keydown', (e) => {
 			if (e.key === 'Enter' && !e.shiftKey) {
 				e.preventDefault();
@@ -97,8 +427,11 @@
 		});
 		sendBtn.addEventListener('click', sendMessage);
 		newSessionBtn.addEventListener('click', newSession);
+
+		verifyTokenOnLoad();
 	</script>
 </body>
 </html>
+
 
 

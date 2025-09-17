@@ -11,7 +11,7 @@ app.use(express.json());
 
 // MongoDB connection
 async function connectToDatabase() {
-	const mongoUri = process.env.MONGODB_URL;
+	const mongoUri = process.env.MONGODB_URI;
 	if (!mongoUri) {
 		console.warn('MONGODB_URI not set. Running without database (messages will not persist).');
 		return;
@@ -34,7 +34,9 @@ app.get('/health', (_req, res) => {
 
 // API routes
 const chatRouter = require('./src/routes/chat');
+const { router: authRouter, authenticateToken } = require('./src/routes/auth');
 app.use('/api', chatRouter);
+app.use('/api/auth', authRouter);
 
 // Static frontend
 app.use(express.static('public'));
